@@ -1,0 +1,32 @@
+services:
+  vibeup-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+      VIBEUP_RECOGNIZER_URL: http://recognizer:8765/recognize
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./music:/app/music
+      - ./tracks.json:/app/tracks.json
+    depends_on:
+      recognizer:
+        condition: service_healthy
+
+  recognizer:
+    build:
+      context: ./recognition
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8765"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

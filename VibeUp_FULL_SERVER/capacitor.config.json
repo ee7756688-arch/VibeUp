@@ -1,0 +1,6 @@
+{
+  "appId": "com.vibeup",
+  "appName": "VibeUp",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
